@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Trading Analysis - Analisis Saham Berbasis AI</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lightweight-charts/dist/lightweight-charts.standalone.production.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-container">
+            <div class="logo">
+                <i class="fas fa-chart-line"></i>
+                <span>AI Trading Analysis</span>
+            </div>
+            <nav class="nav">
+                <a href="#dashboard" class="nav-link active">Dashboard</a>
+                <a href="#analysis" class="nav-link">Analisis</a>
+                <a href="#watchlist" class="nav-link">Watchlist</a>
+                <a href="#portfolio" class="nav-link">Portfolio</a>
+            </nav>
+            <div class="header-actions">
+                <div class="market-status">
+                    <span class="status-indicator active"></span>
+                    <span>Pasar Aktif</span>
+                </div>
+                <button class="btn btn-primary" id="settingsBtn">
+                    <i class="fas fa-cog"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <!-- Market Overview -->
+        <section class="market-overview">
+            <div class="container">
+                <div class="market-indices">
+                    <div class="index-card">
+                        <h3>IHSG</h3>
+                        <div class="index-value" id="ihsg-value">7,234.56</div>
+                        <div class="index-change positive" id="ihsg-change">+45.23 (+0.63%)</div>
+                    </div>
+                    <div class="index-card">
+                        <h3>LQ45</h3>
+                        <div class="index-value" id="lq45-value">945.67</div>
+                        <div class="index-change positive" id="lq45-change">+12.34 (+1.32%)</div>
+                    </div>
+                    <div class="index-card">
+                        <h3>IDX30</h3>
+                        <div class="index-value" id="idx30-value">652.89</div>
+                        <div class="index-change negative" id="idx30-change">-8.76 (-1.32%)</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Stock Search and Selection -->
+        <section class="stock-selection">
+            <div class="container">
+                <div class="search-container">
+                    <div class="search-box">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="stockSearch" placeholder="Cari saham (contoh: BBCA, BBRI, ASII)">
+                        <button class="btn btn-primary" id="searchBtn">Cari</button>
+                    </div>
+                    <div class="popular-stocks">
+                        <span class="label">Populer:</span>
+                        <button class="stock-tag" data-symbol="BBCA">BBCA</button>
+                        <button class="stock-tag" data-symbol="BBRI">BBRI</button>
+                        <button class="stock-tag" data-symbol="ASII">ASII</button>
+                        <button class="stock-tag" data-symbol="TLKM">TLKM</button>
+                        <button class="stock-tag" data-symbol="ICBP">ICBP</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Dashboard -->
+        <section class="dashboard" id="dashboard">
+            <div class="container">
+                <div class="dashboard-grid">
+                    <!-- Stock Chart -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h2 id="chartTitle">BBCA - Bank Central Asia Tbk</h2>
+                            <div class="chart-controls">
+                                <button class="btn btn-sm" data-timeframe="1m">1m</button>
+                                <button class="btn btn-sm active" data-timeframe="5m">5m</button>
+                                <button class="btn btn-sm" data-timeframe="15m">15m</button>
+                                <button class="btn btn-sm" data-timeframe="1h">1h</button>
+                                <button class="btn btn-sm" data-timeframe="1d">1d</button>
+                            </div>
+                        </div>
+                        <div class="chart-wrapper">
+                            <div id="tradingChart"></div>
+                        </div>
+                    </div>
+
+                    <!-- AI Analysis Panel -->
+                    <div class="analysis-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-robot"></i> Analisis AI</h3>
+                            <div class="ai-status">
+                                <span class="status-dot active"></span>
+                                <span>AI Aktif</span>
+                            </div>
+                        </div>
+                        
+                        <div class="ai-recommendation" id="aiRecommendation">
+                            <div class="recommendation-header">
+                                <div class="sentiment-badge bullish" id="sentimentBadge">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <span>BULLISH</span>
+                                </div>
+                                <div class="confidence-meter">
+                                    <div class="confidence-bar">
+                                        <div class="confidence-fill" id="confidenceFill" style="width: 75%"></div>
+                                    </div>
+                                    <span id="confidenceText">75%</span>
+                                </div>
+                            </div>
+                            
+                            <div class="recommendation-details">
+                                <div class="recommendation-action">
+                                    <h4>Rekomendasi</h4>
+                                    <div class="action-badge buy" id="actionBadge">BUY</div>
+                                </div>
+                                
+                                <div class="trading-levels">
+                                    <div class="level-item">
+                                        <span class="level-label">Entry:</span>
+                                        <span class="level-value" id="entryPrice">Rp 9,850</span>
+                                    </div>
+                                    <div class="level-item">
+                                        <span class="level-label">Take Profit:</span>
+                                        <span class="level-value positive" id="takeProfit">Rp 10,150</span>
+                                    </div>
+                                    <div class="level-item">
+                                        <span class="level-label">Stop Loss:</span>
+                                        <span class="level-value negative" id="stopLoss">Rp 9,650</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="risk-metrics">
+                                    <div class="metric-item">
+                                        <span class="metric-label">Risk/Reward:</span>
+                                        <span class="metric-value" id="riskReward">1:2</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-label">Risk Level:</span>
+                                        <span class="metric-value" id="riskLevel">MEDIUM</span>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="ai-analysis-text" id="aiAnalysisText">
+                                Analisis AI menunjukkan sinyal bullish yang kuat berdasarkan konvergensi indikator teknikal. 
+                                RSI menunjukkan oversold condition, MACD menunjukkan bullish crossover, dan harga berada di 
+                                support level yang kuat. Rekomendasi untuk entry di level support dengan target profit 3% 
+                                dan stop loss 1.5%.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Technical Indicators -->
+                    <div class="indicators-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-chart-bar"></i> Indikator Teknikal</h3>
+                        </div>
+                        
+                        <div class="indicators-grid">
+                            <div class="indicator-card">
+                                <div class="indicator-header">
+                                    <span class="indicator-name">RSI (14)</span>
+                                    <span class="indicator-value" id="rsiValue">45.2</span>
+                                </div>
+                                <div class="indicator-bar">
+                                    <div class="indicator-fill" id="rsiFill" style="width: 45.2%"></div>
+                                </div>
+                                <div class="indicator-signal neutral" id="rsiSignal">NEUTRAL</div>
+                            </div>
+                            
+                            <div class="indicator-card">
+                                <div class="indicator-header">
+                                    <span class="indicator-name">MACD</span>
+                                    <span class="indicator-value" id="macdValue">0.25</span>
+                                </div>
+                                <div class="indicator-bar">
+                                    <div class="indicator-fill" id="macdFill" style="width: 60%"></div>
+                                </div>
+                                <div class="indicator-signal bullish" id="macdSignal">BULLISH</div>
+                            </div>
+                            
+                            <div class="indicator-card">
+                                <div class="indicator-header">
+                                    <span class="indicator-name">Stochastic</span>
+                                    <span class="indicator-value" id="stochValue">35.8</span>
+                                </div>
+                                <div class="indicator-bar">
+                                    <div class="indicator-fill" id="stochFill" style="width: 35.8%"></div>
+                                </div>
+                                <div class="indicator-signal neutral" id="stochSignal">NEUTRAL</div>
+                            </div>
+                            
+                            <div class="indicator-card">
+                                <div class="indicator-header">
+                                    <span class="indicator-name">BB Position</span>
+                                    <span class="indicator-value" id="bbValue">0.65</span>
+                                </div>
+                                <div class="indicator-bar">
+                                    <div class="indicator-fill" id="bbFill" style="width: 65%"></div>
+                                </div>
+                                <div class="indicator-signal bullish" id="bbSignal">BULLISH</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Market Data -->
+                    <div class="market-data-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-info-circle"></i> Data Pasar</h3>
+                        </div>
+                        
+                        <div class="market-data-grid">
+                            <div class="data-item">
+                                <span class="data-label">Harga Terakhir</span>
+                                <span class="data-value" id="lastPrice">Rp 9,850</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Perubahan</span>
+                                <span class="data-value positive" id="priceChange">+150 (+1.55%)</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Volume</span>
+                                <span class="data-value" id="volume">2,345,678</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">High</span>
+                                <span class="data-value" id="highPrice">Rp 9,950</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Low</span>
+                                <span class="data-value" id="lowPrice">Rp 9,750</span>
+                            </div>
+                            <div class="data-item">
+                                <span class="data-label">Open</span>
+                                <span class="data-value" id="openPrice">Rp 9,800</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Order Book -->
+                    <div class="orderbook-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-list"></i> Order Book</h3>
+                            <div class="spread-info">
+                                <span>Spread: </span>
+                                <span id="spreadValue">Rp 10</span>
+                                <span id="spreadPercent">(0.10%)</span>
+                            </div>
+                        </div>
+                        
+                        <div class="orderbook-container">
+                            <div class="orderbook-side">
+                                <div class="side-header asks">Asks (Jual)</div>
+                                <div class="orderbook-rows" id="asksContainer">
+                                    <!-- Asks will be populated here -->
+                                </div>
+                            </div>
+                            <div class="orderbook-side">
+                                <div class="side-header bids">Bids (Beli)</div>
+                                <div class="orderbook-rows" id="bidsContainer">
+                                    <!-- Bids will be populated here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Real-time Signals -->
+                    <div class="signals-panel">
+                        <div class="panel-header">
+                            <h3><i class="fas fa-bell"></i> Sinyal Real-time</h3>
+                            <button class="btn btn-sm" id="clearSignals">Clear</button>
+                        </div>
+                        
+                        <div class="signals-container" id="signalsContainer">
+                            <!-- Signals will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Pengaturan</h3>
+                <button class="modal-close" id="closeSettings">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="setting-group">
+                    <label>API Key Gemini:</label>
+                    <input type="password" id="geminiApiKey" placeholder="Masukkan API key Gemini">
+                </div>
+                <div class="setting-group">
+                    <label>Update Interval (detik):</label>
+                    <input type="number" id="updateInterval" value="5" min="1" max="60">
+                </div>
+                <div class="setting-group">
+                    <label>Risk Tolerance:</label>
+                    <select id="riskTolerance">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="cancelSettings">Batal</button>
+                <button class="btn btn-primary" id="saveSettings">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <i class="fas fa-spinner fa-spin"></i>
+            <span>Memuat data...</span>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
