@@ -1,0 +1,120 @@
+@startuml Use_Case_Diagram
+!theme plain
+skinparam usecase {
+    BackgroundColor LightBlue
+    BorderColor DarkBlue
+    ArrowColor Black
+}
+
+skinparam actor {
+    BackgroundColor LightYellow
+    BorderColor DarkBlue
+}
+
+title Use Case Diagram - Sistem Manajemen Kehadiran dan Surat
+
+' Actors
+actor "Karyawan/\nPeserta Magang" as Karyawan
+actor "Admin/HR" as Admin
+actor "Supervisor/\nManager" as Supervisor
+actor "Pemohon\nEksternal" as Pemohon
+
+' System boundary
+rectangle "Sistem Manajemen Kehadiran dan Surat" {
+    
+    ' Kehadiran Management
+    package "Modul Kehadiran" {
+        usecase "Catat Kehadiran\nMasuk" as UC1
+        usecase "Catat Kehadiran\nKeluar" as UC2
+        usecase "Upload Foto\nKehadiran" as UC3
+        usecase "Lihat Riwayat\nKehadiran" as UC4
+        usecase "Monitor Kehadiran\nKaryawan" as UC5
+    }
+    
+    ' User Management
+    package "Modul Manajemen Pengguna" {
+        usecase "Kelola Data\nPengguna" as UC6
+        usecase "Registrasi\nPengguna Baru" as UC7
+        usecase "Update Profil\nPengguna" as UC8
+    }
+    
+    ' Job Description Management
+    package "Modul Penugasan Kerja" {
+        usecase "Buat Penugasan\nKerja" as UC9
+        usecase "Lihat Penugasan\nKerja" as UC10
+        usecase "Update Status\nPekerjaan" as UC11
+        usecase "Upload Gambar\nPekerjaan" as UC12
+    }
+    
+    ' Performance Assessment
+    package "Modul Penilaian Kinerja" {
+        usecase "Buat Penilaian\nKinerja" as UC13
+        usecase "Lihat Hasil\nPenilaian" as UC14
+        usecase "Update\nPenilaian" as UC15
+    }
+    
+    ' Letter Management
+    package "Modul Manajemen Surat" {
+        usecase "Proses Surat\nPermohonan" as UC16
+        usecase "Buat Surat\nBalasan" as UC17
+        usecase "Kelola Status\nSurat" as UC18
+        usecase "Lihat Riwayat\nSurat" as UC19
+    }
+    
+    ' Master Data Management
+    package "Modul Master Data" {
+        usecase "Kelola Master\nJurusan" as UC20
+        usecase "Kelola Master\nDivisi" as UC21
+        usecase "Kelola Master\nStatus Surat" as UC22
+    }
+}
+
+' Karyawan relationships
+Karyawan --> UC1
+Karyawan --> UC2
+Karyawan --> UC3
+Karyawan --> UC4
+Karyawan --> UC8
+Karyawan --> UC10
+Karyawan --> UC11
+Karyawan --> UC12
+Karyawan --> UC14
+
+' Admin relationships
+Admin --> UC5
+Admin --> UC6
+Admin --> UC7
+Admin --> UC16
+Admin --> UC17
+Admin --> UC18
+Admin --> UC19
+Admin --> UC20
+Admin --> UC21
+Admin --> UC22
+
+' Supervisor relationships
+Supervisor --> UC5
+Supervisor --> UC9
+Supervisor --> UC13
+Supervisor --> UC15
+Supervisor --> UC19
+
+' Pemohon relationships
+Pemohon --> UC16
+Pemohon --> UC19
+
+' Include relationships
+UC1 .> UC3 : <<include>>
+UC2 .> UC3 : <<include>>
+UC17 .> UC16 : <<include>>
+UC13 .> UC6 : <<include>>
+
+' Extend relationships
+UC4 .> UC1 : <<extend>>
+UC4 .> UC2 : <<extend>>
+UC19 .> UC17 : <<extend>>
+
+' Generalization
+UC5 --|> UC4
+
+@enduml
