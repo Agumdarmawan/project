@@ -1,0 +1,116 @@
+@startuml Use Case Diagram - Sistem Manajemen Kehadiran dan Penilaian
+
+!define RECTANGLE class
+
+' Define actors
+actor "Karyawan/Peserta" as Karyawan
+actor "Admin/HRD" as Admin
+actor "Supervisor/Manager" as Supervisor
+actor "Pemohon Magang" as Pemohon
+
+' Define system boundary
+rectangle "Sistem Manajemen Kehadiran dan Penilaian" {
+  ' Use cases for Kehadiran (Attendance)
+  usecase "Melakukan Absen Masuk" as UC1
+  usecase "Melakukan Absen Keluar" as UC2
+  usecase "Upload Foto Kehadiran" as UC3
+  usecase "Lihat Riwayat Kehadiran" as UC4
+  
+  ' Use cases for Users Management
+  usecase "Registrasi Pengguna Baru" as UC5
+  usecase "Update Profil Pengguna" as UC6
+  usecase "Kelola Data Pengguna" as UC7
+  usecase "Lihat Daftar Pengguna" as UC8
+  
+  ' Use cases for Jobdesc
+  usecase "Buat Deskripsi Pekerjaan" as UC9
+  usecase "Assign Pekerjaan" as UC10
+  usecase "Update Status Pekerjaan" as UC11
+  usecase "Lihat Daftar Pekerjaan" as UC12
+  usecase "Upload Gambar Pekerjaan" as UC13
+  
+  ' Use cases for Penilaian (Assessment)
+  usecase "Input Penilaian Kinerja" as UC14
+  usecase "Lihat Hasil Penilaian" as UC15
+  usecase "Generate Laporan Penilaian" as UC16
+  
+  ' Use cases for Surat Balasan
+  usecase "Ajukan Permohonan Magang" as UC17
+  usecase "Proses Surat Balasan" as UC18
+  usecase "Update Status Surat" as UC19
+  usecase "Cetak Surat Balasan" as UC20
+  
+  ' Use cases for Master Data
+  usecase "Kelola Master Jurusan" as UC21
+  usecase "Kelola Master Divisi" as UC22
+  usecase "Kelola Master Status Surat" as UC23
+}
+
+' Define relationships for Karyawan/Peserta
+Karyawan --> UC1
+Karyawan --> UC2
+Karyawan --> UC3
+Karyawan --> UC4
+Karyawan --> UC6
+Karyawan --> UC11
+Karyawan --> UC12
+Karyawan --> UC15
+
+' Define relationships for Admin/HRD
+Admin --> UC5
+Admin --> UC7
+Admin --> UC8
+Admin --> UC9
+Admin --> UC10
+Admin --> UC18
+Admin --> UC19
+Admin --> UC20
+Admin --> UC21
+Admin --> UC22
+Admin --> UC23
+Admin --> UC4
+
+' Define relationships for Supervisor/Manager
+Supervisor --> UC9
+Supervisor --> UC10
+Supervisor --> UC11
+Supervisor --> UC12
+Supervisor --> UC14
+Supervisor --> UC15
+Supervisor --> UC16
+Supervisor --> UC4
+
+' Define relationships for Pemohon Magang
+Pemohon --> UC17
+
+' Define include relationships
+UC1 ..> UC3 : <<include>>
+UC2 ..> UC3 : <<include>>
+UC14 ..> UC15 : <<include>>
+UC18 ..> UC19 : <<include>>
+
+' Define extend relationships
+UC4 ..> UC16 : <<extend>>
+UC17 ..> UC5 : <<extend>>
+
+' Add notes
+note right of UC1
+  Mencatat waktu masuk
+  dan foto kehadiran
+end note
+
+note right of UC14
+  Penilaian meliputi:
+  - Kedisiplinan
+  - Tanggung jawab
+  - Komunikasi
+  - Aspek lainnya
+end note
+
+note left of UC17
+  Pemohon mengajukan
+  permohonan magang
+  dengan data jurusan
+end note
+
+@enduml
