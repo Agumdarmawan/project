@@ -1,0 +1,83 @@
+flowchart LR
+  %% Aktor
+  Admin["Admin"]
+  HR["Staf HR"]
+  Penilai["Supervisor / Penilai"]
+  User["Anggota / User"]
+  Pemohon["Pemohon (Eksternal)"]
+  Email["Layanan Email/Notif"]
+
+  %% Sistem dan use case
+  subgraph Sistem
+    direction TB
+    UC_Users("(Kelola Pengguna)")
+    UC_Jurusan("(Kelola Master Jurusan)")
+    UC_Divisi("(Kelola Master Divisi)")
+    UC_StatusSurat("(Kelola Master Status Surat)")
+
+    UC_CheckIn("(Catat Kehadiran Masuk)")
+    UC_CheckOut("(Catat Kehadiran Keluar)")
+    UC_Foto("(Ambil/Upload Foto Kehadiran)")
+    UC_ViewAbsensi("(Lihat Riwayat Kehadiran)")
+
+    UC_Jobdesc("(Kelola Jobdesc & Penugasan)")
+    UC_Progress("(Kirim Progress Pekerjaan)")
+    UC_JobImg("(Unggah Gambar Terkait Pekerjaan)")
+    UC_JobStatus("(Ubah Status Pekerjaan)")
+
+    UC_Penilaian("(Isi Penilaian Kinerja)")
+    UC_ViewNilai("(Lihat Hasil Penilaian)")
+
+    UC_SBP("(Kelola Surat Balasan Pemohon)")
+    UC_SB("(Kelola Surat Balasan)")
+    UC_ApproveSurat("(Validasi/Approval Surat)")
+    UC_ViewSurat("(Lihat Status Permohonan/Surat)")
+
+    UC_Notif("(Kirim Notifikasi)")
+  end
+
+  %% Relasi aktor -> use case
+  Admin --> UC_Users
+  Admin --> UC_Jurusan
+  Admin --> UC_Divisi
+  Admin --> UC_StatusSurat
+
+  HR --> UC_Jobdesc
+  HR --> UC_JobStatus
+  HR --> UC_SBP
+  HR --> UC_SB
+  HR --> UC_ApproveSurat
+
+  Penilai --> UC_Penilaian
+
+  User --> UC_CheckIn
+  User --> UC_CheckOut
+  User --> UC_ViewAbsensi
+  User --> UC_Progress
+  User --> UC_JobImg
+  User --> UC_ViewNilai
+  User --> UC_ViewSurat
+
+  Pemohon --> UC_ViewSurat
+  Email --> UC_Notif
+
+  %% Include/extend antar use case (garis putus-putus)
+  UC_CheckIn -. include .-> UC_Foto
+  UC_CheckOut -. include .-> UC_Foto
+
+  UC_SB -. include .-> UC_StatusSurat
+  UC_SBP -. include .-> UC_Jurusan
+  UC_SBP -. include .-> UC_Divisi
+
+  UC_Jobdesc -. include .-> UC_Users
+  UC_Penilaian -. include .-> UC_Users
+  UC_Penilaian -. include .-> UC_Jobdesc
+  UC_ViewNilai -. include .-> UC_Penilaian
+
+  UC_ApproveSurat -. extend .-> UC_SB
+  UC_ApproveSurat -. extend .-> UC_SBP
+
+  UC_Notif -. include .-> UC_SB
+  UC_Notif -. include .-> UC_ApproveSurat
+  UC_Notif -. include .-> UC_Jobdesc
+  UC_Notif -. include .-> UC_Penilaian
