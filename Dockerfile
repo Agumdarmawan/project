@@ -47,13 +47,13 @@ COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 # Expose port
-EXPOSE 3000
+EXPOSE 3200
 
 # Default envs (can be overridden by compose/.env)
-ENV PORT=3000 \
+ENV PORT=3200 \
     DATABASE_URL="file:/data/dev.db" \
     JWT_SECRET=change_me \
-    PUBLIC_APP_URL="http://localhost:3000"
+    PUBLIC_APP_URL="http://localhost:3200"
 
 WORKDIR /app/server
 ENTRYPOINT ["/entrypoint.sh"]

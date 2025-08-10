@@ -30,7 +30,7 @@ Default accounts:
   - set JWT_SECRET and PUBLIC_APP_URL as needed
 - Build and run:
   - docker compose up -d --build
-- Visit PUBLIC_APP_URL (default http://localhost:3000)
+- Visit PUBLIC_APP_URL (default http://localhost:3200)
 
 Notes:
 - Data persists in a named volume `data` (SQLite file at /data/dev.db)
@@ -41,7 +41,7 @@ Notes:
 ## Environment Variables
 
 - NODE_ENV: production in Docker
-- PORT: 3000
+- PORT: 3200
 - DATABASE_URL: file:/data/dev.db (container)
 - JWT_SECRET: set a strong secret
 - PUBLIC_APP_URL: public base URL for QR links
