@@ -1,0 +1,18 @@
+services:
+  web:
+    build: .
+    container_name: qr-attendance
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=file:/data/dev.db
+      - JWT_SECRET=${JWT_SECRET}
+      - PUBLIC_APP_URL=${PUBLIC_APP_URL}
+    volumes:
+      - data:/data
+volumes:
+  data:
+    driver: local

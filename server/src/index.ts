@@ -8,6 +8,8 @@ import { z } from 'zod';
 import { PrismaClient, Role } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import QRCode from 'qrcode';
+import path from 'path';
+import { fileURLToPath } from 'url';
 
 const prisma = new PrismaClient();
 const app = express();
@@ -188,6 +190,19 @@ app.get('/api/my/attendance', authMiddleware, requireRole(Role.USER), async (req
 
 // Health
 app.get('/api/health', (_req, res) => res.json({ ok: true }));
+
+// Serve static client in production
+const isProd = process.env.NODE_ENV === 'production';
+if (isProd) {
+  // Resolve __dirname for ESM
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = path.dirname(__filename);
+  const publicDir = path.join(__dirname, '..', 'public');
+  app.use(express.static(publicDir));
+  app.get('*', (_req, res) => {
+    res.sendFile(path.join(publicDir, 'index.html'));
+  });
+}
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

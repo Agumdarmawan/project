@@ -9,12 +9,6 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
-  "proxy": {
-    "/api": {
-      "target": "http://localhost:3000",
-      "changeOrigin": true
-    }
-  },
   "dependencies": {
     "autoprefixer": "^10.4.21",
     "axios": "^1.11.0",
