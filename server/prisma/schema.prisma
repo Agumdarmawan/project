@@ -1,0 +1,76 @@
+// This schema defines the QR-based attendance tracking models
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  USER
+}
+
+model User {
+  id            String        @id @default(cuid())
+  email         String        @unique
+  name          String
+  passwordHash  String
+  role          Role          @default(USER)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  coursesManaged Course[]     @relation("CourseAdmin")
+  enrollments    Enrollment[]
+}
+
+model Course {
+  id          String           @id @default(cuid())
+  name        String
+  description String?
+  adminId     String
+  admin       User             @relation("CourseAdmin", fields: [adminId], references: [id])
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  enrollments Enrollment[]
+  sessions    CheckInSession[]
+}
+
+model Enrollment {
+  id              String       @id @default(cuid())
+  courseId        String
+  course          Course       @relation(fields: [courseId], references: [id])
+  studentId       String
+  student         User         @relation(fields: [studentId], references: [id])
+  maxAttendances  Int
+  attendances     Attendance[]
+  createdAt       DateTime     @default(now())
+
+  @@unique([courseId, studentId])
+}
+
+model CheckInSession {
+  id         String       @id @default(cuid())
+  courseId   String
+  course     Course       @relation(fields: [courseId], references: [id])
+  token      String       @unique
+  expiresAt  DateTime
+  isActive   Boolean      @default(true)
+  createdAt  DateTime     @default(now())
+  attendances Attendance[]
+}
+
+model Attendance {
+  id            String          @id @default(cuid())
+  enrollmentId  String
+  enrollment    Enrollment      @relation(fields: [enrollmentId], references: [id])
+  sessionId     String
+  session       CheckInSession  @relation(fields: [sessionId], references: [id])
+  createdAt     DateTime        @default(now())
+
+  @@unique([enrollmentId, sessionId])
+}
